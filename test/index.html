@@ -1,0 +1,150 @@
+<!doctype html>
+<html>
+  <head>
+    <title>history.js Unit Tests</title>
+    <link rel="stylesheet" href="qunit/qunit/qunit.css" />
+    <script src="qunit/qunit/qunit.js"></script>
+    <script src="../build/history-min.js"></script>
+    <script>
+      var IE8inIE7 = document.documentMode && document.documentMode <= 7;
+
+      test('DEBUG enabled', function () {
+        ok(window.DEBUG, 'DEBUG enabled');
+      });
+
+      if ('onpopstate' in window) {
+        module('Native Support');
+        test('Native Support', function () {
+          ok(true, 'Native pushState support, no tests required');
+          return;
+        });
+      }
+      else {
+        module('Helpers');
+
+        if (window.history_js && history_js.persist) {
+          module('Persistent Storage');
+          test('Storage', function () {
+            var obj = { a: 'hello' };
+
+            ok(true, 'Native sessionStorage');
+            ok(JSON.stringify, 'JSON.stringify exists');
+            ok(JSON.parse, 'JSON.parse exists');
+            equals(JSON.parse(JSON.stringify(obj)).a, 'hello', 'Value mantained');
+          });
+        }
+        else {
+          test('Storage', function () {
+            ok(true, 'Using non-persistent storage');
+          });
+        }
+
+        if ('onhashchange' in window) {
+          module('Native onhashchange');
+          test('hashchange', function () {
+            ok(true, 'Native onhashchange');
+          });
+        }
+        else if (window.history_js) {
+          module('Hash change detection');
+          test('hashchange', function () {
+            var h = window.history_js,
+                old_hashchange = h.hashchange,
+                old_hash = location.hash || '#',
+                count = 0;;
+
+            stop(2000);
+            expect(2);
+            h.hashchange = function () {
+              ok(true, 'hashChange received');
+              location.hash = old_hash;
+              count += 1;
+              if (count === 2) {
+                h.hashchange = old_hashchange;
+                start();
+              }
+            };
+
+            location.hash = "new-hash";
+          });
+        }
+      }
+
+      module('HTML5 History');
+
+      test('pushState: Basic Callbacks', function () {
+        // First, we make sure that onpopstate is never called after
+        // pushState / replaceState
+        ok('pushState' in window.history, 'pushState exposed');
+
+        stop(2000);
+        window.onpopstate = function (e) {
+          ok(false, 'onpopstate received without back() or forward()');
+        };
+        window.history.pushState('first', 'first', 'basic-1');
+        window.history.pushState('second', 'first', 'basic-2');
+        window.history.replaceState('third', 'second', 'basic-3');
+
+        // State is now
+        // ['third'] (replaced 'second')
+        // ['first']
+
+        setTimeout(function () {
+          // Great, now if we hit the back button, we should go back to our first
+          // state
+          window.onpopstate = function (e) {
+            ok(true, 'onpopstate received after back button');
+            equals(e.state, 'first', 'Object received');
+            // Clear out handler
+            window.onpopstate = null;
+
+            start();
+          };
+
+          // state will pop to 'first'
+          window.history.back();
+        }, 500);
+      });
+
+      test('pushState: Basic State object', function () {
+        // First, let's push some new state on the stack
+        window.history.pushState({ phase: 'advanced-1' }, 'Advanced One', 'advanced-1');
+        window.history.pushState({ phase: 'advanced-2' }, 'Advanced Two', 'advanced-2');
+        window.history.pushState({ phase: 'advanced-3' }, 'Advanced Tre', 'advanced-3');
+
+        // Go back one, and we should get #2
+        stop(2000);
+        expect(3);
+        window.onpopstate = function (e) {
+          equals(e.state && e.state.phase, 'advanced-2', 'Correct state object received');
+          // Great, now do it again
+          window.onpopstate = function (e) {
+            equals(e.state && e.state.phase, 'advanced-1', 'Correct state object received');
+
+            // OK, now test forward
+            window.onpopstate = function (e) {
+              equals(e.state && e.state.phase, 'advanced-3', 'Correct state object received');
+              window.onpopstate = null;
+              // Bring us back to the beginning
+              window.history.go(-3);
+              start();
+            }
+
+            // Jump forward to the third item
+            window.history.go(2);
+          };
+          window.history.back();
+        };
+        window.history.back();
+      });
+    </script>
+  </head>
+
+  <body>
+    <h1 id="qunit-header">history.js Unit Tests</h1>
+    <h2 id="qunit-banner"></h2>
+    <h2 id="qunit-userAgent"></h2>
+    <ol id="qunit-tests">
+    </ol>
+  </body>
+</html>
