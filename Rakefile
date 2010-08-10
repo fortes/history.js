@@ -32,4 +32,7 @@ task :compile do
   ]
 
   sh "java -jar #{closure_compiler} #{files.join(' ')} #{compiler_flags.join(' ')}"
+
+  # Make gzip version
+  sh "cat #{File.join(BUILD_DIR, 'history-min.js')} | gzip -f > #{File.join(BUILD_DIR, 'history-min.js.gz')}"
 end
