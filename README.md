@@ -4,6 +4,8 @@ history.js provides an implementation of the [HTML5 history API](http://www.what
 
 Browsers that already support his event (Chrome & Safari, Firefox 4+) use native implementations, which are able to change the page URL without refreshing the page. Older browsers use `location.hash` in order to mimic the official behavior.
 
+1214 bytes minified / 588 bytes gzipped
+
 ## Limitations
 
 * Does not support multiple handlers for the `onpopstate` event
