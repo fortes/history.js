@@ -107,12 +107,12 @@
       });
 
       test('pushState: Callbacks with addEventListener', function () {
-        ok('pushState' in window.history, 'pushState exposed');
-
         stop(2000);
+
         function callback1(event) {
           ok(false, 'popstate listener called without back() or forward()');
         }
+
         window.addEventListener("popstate", callback1, true);
         window.removeEventListener("popstate", callback1, true);
 
@@ -135,10 +135,7 @@
       });
 
       test('pushState: Multiple callbacks with addEventListener', function () {
-        ok('pushState' in window.history, 'pushState exposed');
-
         stop(2000);
-        expect(5);
 
         window.history.pushState('first', 'first', 'basic-1');
         window.history.pushState('second', 'first', 'basic-2');
@@ -149,7 +146,6 @@
             ok(true, 'First popstate event received after back button');
             equals(event.state, 'first', 'Object received');
             window.removeEventListener("popstate", callback1, true);
-            start();
           }, true);
           window.addEventListener("popstate", function callback2(event) {
             ok(true, 'Second popstate event received after back button');

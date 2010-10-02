@@ -6,10 +6,6 @@ Browsers that already support his event (Chrome & Safari, Firefox 4+) use native
 
 1214 bytes minified / 588 bytes gzipped
 
-## Limitations
-
-* Does not support multiple handlers for the `onpopstate` event
-
 ## Installation
 
 Include the script file in your HTML file:
@@ -25,10 +21,23 @@ Same as the official HTML5 API:
     // Switch to the item
     window.history.pushState({ id: 35 }, 'Viewing item #35', '/item/35'});
 
+    // Single handler
     window.onpopstate = function (e) {
       var id = e.state.id;
       load_item(id);
     };
+    
+    // Multiple listeners using addEventListener
+    window.addEventListener("popstate", function callback1(event) {
+      var id = e.state.id;
+      load_item(id);
+    }, true);
+    
+    window.addEventListener("popstate", function callback2(event) {
+      do_something_else(e.state);
+      // remove one single listener
+      window.removeEventListener("popstate", callback2, true);
+    }, true);
 
 Any use allowed in the standard but not supported by this API is considered a bug.
 
