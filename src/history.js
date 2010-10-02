@@ -178,15 +178,12 @@ if (document.location.hash) {
     if ('onpopstate' in window && typeof window.onpopstate === 'function') {
       window.onpopstate.apply(window, [{ 'state': data ? data.state : null }]);
     }
-    else {
-      if (DEBUG) {
-        console.info('onpopstate wasn\'t found, firing popstate event');
-      }
-      var event = document.createEvent("Event");
-      event.initEvent("popstate", true, true);
-      event.state = data ? data.state : null;
-      window.dispatchEvent(event);
-    }
+
+    // always fire event
+    var event = document.createEvent("Event");
+    event.initEvent("popstate", true, true);
+    event.state = data ? data.state : null;
+    window.dispatchEvent(event);
   };
 
   // IE8 in IE7 mode defines onhashchange, but never fires it
@@ -219,4 +216,4 @@ if (document.location.hash) {
   if (history_js.normalized_hash()) {
     history_js.hashchange();
   }
-}(window.history_js, window, document.location));
+  }(window.history_js, window, document.location));
