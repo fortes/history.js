@@ -45,7 +45,7 @@ if (document.location.hash) {
       hash = hash.substr(1);
       document.location = hash;
     }
-  }());
+  })();
 }
 
 (function (history_js, window, location) {
@@ -177,8 +177,12 @@ if (document.location.hash) {
     }
     else {
       if (DEBUG) {
-        console.info('State changed, but no handler!');
+        console.info('onpopstate wasn\'t found, firing popstate event');
       }
+      var event = document.createEvent("Event");
+      event.initEvent("popstate", true, true);
+      event.state = data ? data.state : null;
+      window.dispatchEvent(event);
     }
   };
 
