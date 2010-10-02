@@ -60,7 +60,7 @@ if (document.location.hash) {
   }
 
   var IE8inIE7 = document.documentMode && document.documentMode <= 7,
-      useLocalStorage = 'sessionStorage' in window && window.JSON && !IE8inIE7;
+      useLocalStorage = 'localStorage' in window && window.JSON && !IE8inIE7;
 
   // Storage API
   if (useLocalStorage) {
@@ -70,11 +70,11 @@ if (document.location.hash) {
     }
 
     history_js.setStorage = function setStorage(name, value) {
-      window.sessionStorage[name] = JSON.stringify(value);
+      window.localStorage[name] = JSON.stringify(value);
     };
 
     history_js.getStorage = function getStorage(name) {
-      return JSON.parse(window.sessionStorage[name]);
+      return JSON.parse(window.localStorage[name]);
     }
   }
   else {
