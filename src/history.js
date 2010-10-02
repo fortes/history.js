@@ -102,8 +102,11 @@ if (document.location.hash) {
    * @param {boolean} replace
    */
   function changeState (data, title, url, replace) {
-    // Always add delimiter and escape hash
-    url = history_js.delimiter + escape(url);
+    if (!url.match(/^#.*/)) { 
+      url = history_js.delimiter + escape(url);
+    } else {
+      url = url.substr(1);
+    }
 
     // Store data using url
     history_js.setStorage(url, { state: data, title: title });
