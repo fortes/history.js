@@ -69,6 +69,9 @@ if (document.location.hash) {
       history_js.persist = true;
     }
 
+    // clear old entries
+    localStorage.clear();
+
     history_js.setStorage = function setStorage(name, value) {
       window.localStorage[name] = JSON.stringify(value);
     };
