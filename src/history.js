@@ -182,11 +182,12 @@ if (document.location.hash) {
       window.onpopstate.apply(window, [{ 'state': data ? data.state : null }]);
     }
 
-    // always fire event
-    var event = document.createEvent("Event");
-    event.initEvent("popstate", true, true);
-    event.state = data ? data.state : null;
-    window.dispatchEvent(event);
+    if(typeof window.dispatchEvent === 'function' && typeof document.createEvent === 'function') {
+      var event = document.createEvent("Event");
+      event.initEvent("popstate", true, true);
+      event.state = data ? data.state : null;
+      window.dispatchEvent(event);
+    }
   };
 
   // IE8 in IE7 mode defines onhashchange, but never fires it
