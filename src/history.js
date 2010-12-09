@@ -132,7 +132,7 @@ if (document.location.hash) {
    * @param {?string} title
    * @param {!string} url
    */
-  window.history.pushState = function (data, title, url) {
+  window.History.prototype.pushState = function (data, title, url) {
     changeState(data, title, url, false);
   };
 
@@ -141,7 +141,7 @@ if (document.location.hash) {
    * @param {?string} title
    * @param {!string} url
    */
-  window.history.replaceState = function (data, title, url) {
+  window.History.prototype.replaceState = function (data, title, url) {
     changeState(data, title, url, true);
   };
 
