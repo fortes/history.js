@@ -45,9 +45,9 @@ Any use allowed in the standard but not supported by this API is considered a bu
 
 * Opera ?
 * IE6-7
-* Safari 3+ (No persitence)
-* Chrome 3+ (No persitence)
-* Firefox 2+ (No persitence)
+* Safari 3+ (No persistence)
+* Chrome 3+ (No persistence)
+* Firefox 2+ (No persistence)
 
 ## TODO
 
