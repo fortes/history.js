@@ -1,3 +1,7 @@
+# This project is not maintained!
+
+The code is here if you want it, but this is not maintained. If you'd like to take over, go ahead and send a pull request. Browsers are modern enough, just ditch the last few that don't support the History API.
+
 # history.js
 
 history.js provides an implementation of the [HTML5 history API](http://www.whatwg.org/specs/web-apps/current-work/multipage/history.html#the-history-interface): `history.pushState` and `history.replaceState` functions, as well as the `window.onpopstate` event.
