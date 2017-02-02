@@ -49,9 +49,9 @@
           module('Hash change detection');
           test('hashchange', function () {
             var h = window.history_js,
-                old_hashchange = h.hashchange,
-                old_hash = location.hash || '#',
-                count = 0;;
+            old_hashchange = h.hashchange,
+            old_hash = location.hash || '#',
+            count = 0;;
 
             stop(2000);
             expect(2);
@@ -106,6 +106,59 @@
         }, 500);
       });
 
+      test('pushState: Callbacks with addEventListener', function () {
+        stop(2000);
+
+        function callback1(event) {
+          ok(false, 'popstate listener called without back() or forward()');
+        }
+
+        window.addEventListener("popstate", callback1, true);
+        window.removeEventListener("popstate", callback1, true);
+
+        window.history.pushState('first', 'first', 'basic-1');
+        window.history.pushState('second', 'first', 'basic-2');
+        window.history.replaceState('third', 'second', 'basic-3');
+
+        setTimeout(function () {
+          window.addEventListener("popstate", function callback2(event) {
+            ok(true, 'popstate event received after back button');
+            equals(event.state, 'first', 'Object received');
+            // Clear out handler
+            window.removeEventListener("popstate", callback2, true);
+            start();
+          }, true);
+
+          // state will pop to 'first'
+          window.history.back();
+        }, 500);
+      });
+
+      test('pushState: Multiple callbacks with addEventListener', function () {
+        stop(2000);
+
+        window.history.pushState('first', 'first', 'basic-1');
+        window.history.pushState('second', 'first', 'basic-2');
+        window.history.replaceState('third', 'second', 'basic-3');
+
+        setTimeout(function () {
+          window.addEventListener("popstate", function callback1(event) {
+            ok(true, 'First popstate event received after back button');
+            equals(event.state, 'first', 'Object received');
+            window.removeEventListener("popstate", callback1, true);
+          }, true);
+          window.addEventListener("popstate", function callback2(event) {
+            ok(true, 'Second popstate event received after back button');
+            equals(event.state, 'first', 'Object received');
+            window.removeEventListener("popstate", callback2, true);
+            start();
+          }, true);
+
+          // state will pop to 'first'
+          window.history.back();
+        }, 500);
+      });
+
       test('pushState: Basic State object', function () {
         // First, let's push some new state on the stack
         window.history.pushState({ phase: 'advanced-1' }, 'Advanced One', 'advanced-1');
@@ -115,6 +168,7 @@
         // Go back one, and we should get #2
         stop(2000);
         expect(3);
+
         window.onpopstate = function (e) {
           equals(e.state && e.state.phase, 'advanced-2', 'Correct state object received');
           // Great, now do it again

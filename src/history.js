@@ -45,7 +45,7 @@ if (document.location.hash) {
       hash = hash.substr(1);
       document.location = hash;
     }
-  }());
+  })();
 }
 
 (function (history_js, window, location) {
@@ -102,8 +102,11 @@ if (document.location.hash) {
    * @param {boolean} replace
    */
   function changeState (data, title, url, replace) {
-    // Always add delimiter and escape hash
-    url = history_js.delimiter + escape(url);
+    if (!url.match(/^#.*/)) { 
+      url = history_js.delimiter + escape(url);
+    } else {
+      url = url.substr(1);
+    }
 
     // Store data using url
     history_js.setStorage(url, { state: data, title: title });
@@ -129,7 +132,7 @@ if (document.location.hash) {
    * @param {?string} title
    * @param {!string} url
    */
-  window.history.pushState = function (data, title, url) {
+  window.History.prototype.pushState = function (data, title, url) {
     changeState(data, title, url, false);
   };
 
@@ -138,7 +141,7 @@ if (document.location.hash) {
    * @param {?string} title
    * @param {!string} url
    */
-  window.history.replaceState = function (data, title, url) {
+  window.History.prototype.replaceState = function (data, title, url) {
     changeState(data, title, url, true);
   };
 
@@ -175,10 +178,12 @@ if (document.location.hash) {
     if ('onpopstate' in window && typeof window.onpopstate === 'function') {
       window.onpopstate.apply(window, [{ 'state': data ? data.state : null }]);
     }
-    else {
-      if (DEBUG) {
-        console.info('State changed, but no handler!');
-      }
+
+    if(typeof window.dispatchEvent === 'function' && typeof document.createEvent === 'function') {
+      var event = document.createEvent("Event");
+      event.initEvent("popstate", true, true);
+      event.state = data ? data.state : null;
+      window.dispatchEvent(event);
     }
   };
 
@@ -212,4 +217,4 @@ if (document.location.hash) {
   if (history_js.normalized_hash()) {
     history_js.hashchange();
   }
-}(window.history_js, window, document.location));
+  }(window.history_js, window, document.location));
